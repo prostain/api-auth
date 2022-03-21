@@ -31,7 +31,7 @@ module.exports = class EmailController {
       var object = "New login";
       var content =
         "Une tentative de connexion a eu lieu sur votre compte à " +
-        new Date.now();
+        new Date;
       this.sendMyEmail(to, object, content);
     } catch (err) {
       console.log(err);

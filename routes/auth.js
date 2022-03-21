@@ -219,7 +219,7 @@ router.post(
     try {
       let email = req.body.email.trim();
       const userToFind = await User.findOne({
-        where: { email: email },
+        where: { email: email, isActive: true },
         include: [{ model: Role, as: "role" }],
       });
       if (!userToFind) {
@@ -234,14 +234,21 @@ router.post(
         originalPassword
       );
 
-      // TODO: check que le mot de passe du user est correct
+      if (!userToFind) {
+        res
+          .status(401)
+          .send({message: "Aucun utilisateur trouvé pour cette adresse email"});
+        return;
+      }
+
+      emailController.login(req.body.email);
+
       if (!correctPassword) {
         res
           .status(401)
-          .send("Aucun utilisateur trouvé pour cette adresse email");
+          .send({message: "Mot de passe incorrect pour cet utilisateur"});
         return;
       }
-      emailController.login(req.body.email);
 
       let newUser = {
         id: userToFind.id,
