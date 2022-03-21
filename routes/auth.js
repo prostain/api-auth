@@ -53,9 +53,9 @@ var handleStoreError = function (error) {
     parent: error.parent,
   };
 };
-// Start slowing requests after 5 failed attempts to do something for the same user
+// Start slowing requests after 3 failed attempts to do something for the same user
 var userBruteforce = new ExpressBrute(store, {
-  freeRetries: 1,
+  freeRetries: 3,
   minWait: 5 * 60 * 1000, // 5 minutes
   maxWait: 60 * 60 * 1000, // 1 hour,
   failCallback: failCallback,
