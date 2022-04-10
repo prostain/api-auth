@@ -16,13 +16,13 @@ module.exports = class VerifyAccess {
 
     async generateAccessToken(user) {
         return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: "1800s",
+            expiresIn: "3600s",
         });
     }
 
     async generateRefreshToken(user) {
         return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {
-            expiresIn: "1y",
+            expiresIn: "7200s",
         });
     }
 
@@ -74,35 +74,11 @@ module.exports = class VerifyAccess {
         next();
     }
 
-    async authenticateVideoToken(req, res, next) {
-        if (!req.headers.token) {
-            return res.status(401).send('Demande non autorisée');
-        }
-        let token = req.query.token;
-        if (token === null) {
-            return res.status(401).send('Demande non autorisée');
-        }
-        let user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) {
-                return user = err.message;
-            } else {
-                return user
-            }
-        });
-        if (typeof user === 'string') {
-            return res.status(401).send(user);
-        }
-
-        req.user = user;
-        next();
-    }
-
-
     async authenticateRefreshToken(req, res, next) {
-        if (!req.headers.auth || !req.headers.auth.includes(" ")) {
+        if (!req.params.refreshToken) {
             return res.status(401).send("Demande non autorisée");
         }
-        let token = req.headers.auth.split(" ")[1];
+        let token = req.params.refreshToken;
         if (token === null) {
             return res.status(401).send("Demande non autorisée");
         }
@@ -119,6 +95,32 @@ module.exports = class VerifyAccess {
 
 
         req.user = user;
+        req.refreshToken = token;
+        next();
+    }
+
+    async authenticateValidateToken(req, res, next) {
+        if (!req.params.accessToken) {
+            return res.status(401).send("Demande non autorisée");
+        }
+        let token = req.params.accessToken;
+        if (token === null) {
+            return res.status(401).send("Demande non autorisée");
+        }
+        let user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+            if (err) {
+                return res.status(401).send(err.message)
+            } else {
+                return user
+            }
+        });
+        if (!user) {
+            return res.status(401).send("Demande non autorisée");
+        }
+
+
+        req.user = user;
+        req.refreshToken = token;
         next();
     }
 

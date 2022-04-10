@@ -22,10 +22,10 @@ const someOtherPlaintextPassword = 'not_bacon';
 
 /**
  * @swagger
- * /users:
+ * /accounts:
  *   get:
- *     summary:  list users.
- *     tags: [users]
+ *     summary:  list account.
+ *     tags: [account]
  *     parameters:
  *      - name: Auth
  *        in: header
@@ -48,7 +48,7 @@ const someOtherPlaintextPassword = 'not_bacon';
  *         description: .
  */
 
-router.get('/users', verifyAccess.authenticateUserToken, async(req, res) => {
+router.get('/account', verifyAccess.authenticateUserToken, async(req, res) => {
     try {
         const page = req.query.page,
             size = req.query.size;
@@ -111,10 +111,10 @@ router.get('/users', verifyAccess.authenticateUserToken, async(req, res) => {
 
 /**
  * @swagger
- * /users/{id}:
+ * /account/{id}:
  *   get:
  *     summary:  get user.
- *     tags: [users]
+ *     tags: [account]
  *     parameters:
  *      - name: Auth
  *        in: header
@@ -128,7 +128,7 @@ router.get('/users', verifyAccess.authenticateUserToken, async(req, res) => {
  *         description: .
  */
 
-router.get('/users/:id', verifyAccess.authenticateUserToken, async(req, res) => {
+router.get('/account/:id', verifyAccess.authenticateUserToken, async(req, res) => {
     try {
         var user = await User.findOne({ where: { id: req.params.id } })
         return res.json({
@@ -142,10 +142,10 @@ router.get('/users/:id', verifyAccess.authenticateUserToken, async(req, res) => 
 
 /**
  * @swagger
- * /users:
+ * /account:
  *   post:
  *     summary:  Create user.
- *     tags: [users]
+ *     tags: [account]
  *     parameters:
  *      - name: Auth
  *        in: header
@@ -199,7 +199,7 @@ router.get('/users/:id', verifyAccess.authenticateUserToken, async(req, res) => 
  *         description: .
  */
 
-router.post('/users', verifyAccess.authenticateAdminToken, async(req, res) => {
+router.post('/account', verifyAccess.authenticateAdminToken, async(req, res) => {
     try {
 
         var userToFind = await User.findOne({ where: { email: req.body.email } })
@@ -238,10 +238,10 @@ router.post('/users', verifyAccess.authenticateAdminToken, async(req, res) => {
 
 /**
  * @swagger
- * /users/{id}:
+ * /account/{id}:
  *   put:
  *     summary:  modify user.
- *     tags: [users]
+ *     tags: [account]
  *     parameters:
  *      - name: Auth
  *        in: header
@@ -255,7 +255,7 @@ router.post('/users', verifyAccess.authenticateAdminToken, async(req, res) => {
  *         description: .
  */
 
-router.put('/users/:id', verifyAccess.authenticateAdminToken, async(req, res) => {
+router.put('/account/:id', verifyAccess.authenticateAdminToken, async(req, res) => {
     try {
         var user = await User.findOne({ where: { id: req.params.id } })
 
@@ -285,10 +285,10 @@ router.put('/users/:id', verifyAccess.authenticateAdminToken, async(req, res) =>
 
 /**
  * @swagger
- * /users:
+ * /account/delete:
  *   post:
  *     summary:  Soft delete an user.
- *     tags: [users]
+ *     tags: [account]
  *     parameters:
  *      - name: Auth
  *        in: header
@@ -298,7 +298,7 @@ router.put('/users/:id', verifyAccess.authenticateAdminToken, async(req, res) =>
  *       200:
  *         description: .
  */
-router.post('/users', verifyAccess.authenticateAdminToken, async(req, res) => {
+router.post('/account/delete', verifyAccess.authenticateAdminToken, async(req, res) => {
     try {
         const user = await User.findOne({ where: { id: req.user.id } })
 
@@ -317,7 +317,7 @@ router.post('/users', verifyAccess.authenticateAdminToken, async(req, res) => {
  * /profil:
  *   get:
  *     summary:  get an user profil.
- *     tags: [users]
+ *     tags: [account]
  *     parameters:
  *      - name: Auth
  *        in: header
@@ -345,7 +345,7 @@ router.get('/profil', verifyAccess.authenticateUserToken, async(req, res) => {
  * /profil:
  *   put:
  *     summary:  update an user profil.
- *     tags: [users]
+ *     tags: [account]
  *     parameters:
  *      - name: Auth
  *        in: header
