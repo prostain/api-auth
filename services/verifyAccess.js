@@ -34,41 +34,22 @@ module.exports = class VerifyAccess {
         if (token === null) {
             return res.status(401).send("Demande non autorisée");
         }
-        let user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) {
-                return user = err.message;
-            } else {
-                return user
+        let user = jwt.verify(
+            token,
+            process.env.ACCESS_TOKEN_SECRET,
+            (err, user) => {
+                if (err) {
+                    return (user = err.message);
+                } else {
+                    return user;
+                }
             }
-        });
-        if (typeof user === 'string') {
+        );
+        if (typeof user === "string") {
             return res.status(401).send(user);
         }
 
         if (user.role.name !== "admin") return res.sendStatus(401);
-
-        req.user = user;
-        next();
-    }
-
-    async authenticateUserToken(req, res, next) {
-        if (!req.headers.auth || !req.headers.auth.includes(" ")) {
-            return res.status(401).send("Demande non autorisée");
-        }
-        let token = req.headers.auth.split(" ")[1];
-        if (token === null) {
-            return res.status(401).send("Demande non autorisée");
-        }
-        let user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) {
-                return user = err.message;
-            } else {
-                return user
-            }
-        });
-        if (typeof user === 'string') {
-            return res.status(401).send(user);
-        }
 
         req.user = user;
         next();
@@ -121,6 +102,32 @@ module.exports = class VerifyAccess {
 
         req.user = user;
         req.refreshToken = token;
+        next();
+    }
+    async authenticateUserToken(req, res, next) {
+        if (!req.headers.auth || !req.headers.auth.includes(" ")) {
+            return res.status(401).send("Demande non autorisée");
+        }
+        let token = req.headers.auth.split(" ")[1];
+        if (token === null) {
+            return res.status(401).send("Demande non autorisée");
+        }
+        let user = jwt.verify(
+            token,
+            process.env.ACCESS_TOKEN_SECRET,
+            (err, user) => {
+                if (err) {
+                    return (user = err.message);
+                } else {
+                    return user;
+                }
+            }
+        );
+        if (typeof user === "string") {
+            return res.status(401).send(user);
+        }
+
+        req.user = user;
         next();
     }
 

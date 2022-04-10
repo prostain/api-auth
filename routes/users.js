@@ -48,7 +48,7 @@ const someOtherPlaintextPassword = 'not_bacon';
  *         description: .
  */
 
-router.get('/account', verifyAccess.authenticateUserToken, async(req, res) => {
+router.get('/accounts', verifyAccess.authenticateUserToken, async(req, res) => {
     try {
         const page = req.query.page,
             size = req.query.size;

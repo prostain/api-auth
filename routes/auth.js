@@ -344,18 +344,18 @@ router.post(
  *         description: .
  */
 
-router.post(
+router.get(
     "/validate/:accessToken",
     verifyAccess.authenticateValidateToken,
     async(req, res) => {
         try {
             let accessTokenExpiresAt = new Date(req.params.accessToken.exp);
             let accessToken = (
-                accessTokenExpiresAt
+                req.params.accessToken
             ).toString();
             res.send({
                 accessToken: accessToken,
-                accessTokenExpiresAt: accessTokenExpiresAt
+                accessTokenExpiresAt: accessTokenExpiresAt.toDateString()
             });
         } catch (err) {
             console.log(err);
