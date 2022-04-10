@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 var VerifyAccess = require("../services/verifyAccess.js");
 var EmailController = require("../services/emailServices");
 const nodemailer = require("nodemailer");
+const jwt_decode = require('jwt-decode');
 
 const verifyAccess = new VerifyAccess();
 const emailController = new EmailController();
@@ -264,18 +265,21 @@ router.post(
                     name: userToFind.role.name,
                 },
             };
+
             let newToken = await verifyAccess.generateAccessToken(newUser);
             let newRefreshToken = await verifyAccess.generateRefreshToken(newUser)
+            let accessTokenDecoded = jwt_decode(newToken);
+            let refreshTokenDecoded = jwt_decode(newRefreshToken)
             let accessToken = (newToken).toString();
-            let accessTokenExpiresAt = new Date(newToken.exp)
+            let accessTokenExpiresAt = new Date(accessTokenDecoded.exp * 1000)
             let refreshToken = (newRefreshToken).toString();
-            let refreshTokenExpiresAt = new Date(newRefreshToken.exp)
-            console.log(newRefreshToken.id)
+            let refreshTokenExpiresAt = new Date(refreshTokenDecoded.exp * 1000)
+            console.log(newToken)
             res.send({
                 accessToken,
-                accessTokenExpiresAt: accessTokenExpiresAt.toDateString(),
+                accessTokenExpiresAt: accessTokenExpiresAt.toLocaleString(),
                 refreshToken,
-                refreshTokenExpiresAt: refreshTokenExpiresAt.toDateString()
+                refreshTokenExpiresAt: refreshTokenExpiresAt.toLocaleString()
             });
         } catch (err) {
             console.log(err);
@@ -310,16 +314,18 @@ router.post(
             delete user.iat;
             delete user.exp;
             let newToken = await verifyAccess.generateAccessToken(user);
-            let accessTokenExpiresAt = new Date(newToken.iat);
-            let refreshTokenExpirationDate = new Date(req.refreshToken.iat)
+            let accessTokenDecoded = jwt_decode(newToken);
+            let refreshTokenDecoded = jwt_decode(req.refreshToken)
+            let accessTokenExpiresAt = new Date(accessTokenDecoded.exp * 1000);
+            let refreshTokenExpirationDate = new Date(refreshTokenDecoded.exp * 1000)
             let accessToken = (
                 newToken
             ).toString();
             res.send({
                 accessToken: accessToken,
-                accessTokenExpiresAt: accessTokenExpiresAt,
+                accessTokenExpiresAt: accessTokenExpiresAt.toLocaleString(),
                 refreshToken: req.refreshToken,
-                refreshTokenExpiresAt: refreshTokenExpirationDate
+                refreshTokenExpiresAt: refreshTokenExpirationDate.toLocaleString()
             });
         } catch (err) {
             console.log(err);
@@ -349,13 +355,15 @@ router.get(
     verifyAccess.authenticateValidateToken,
     async(req, res) => {
         try {
-            let accessTokenExpiresAt = new Date(req.params.accessToken.exp);
+
+            let accessTokenDecoded = jwt_decode(req.params.accessToken);
+            let accessTokenExpiresAt = new Date(accessTokenDecoded.exp * 1000);
             let accessToken = (
                 req.params.accessToken
             ).toString();
             res.send({
                 accessToken: accessToken,
-                accessTokenExpiresAt: accessTokenExpiresAt.toDateString()
+                accessTokenExpiresAt: accessTokenExpiresAt.toLocaleString()
             });
         } catch (err) {
             console.log(err);
